@@ -9,6 +9,17 @@
  * FORK:
  * https://github.com/melanke/Watch.JS
  */
+
+/**
+ *  Watch.JS is a small library that brings a lot of possibilities.
+ *  You may know that the "Observer" design pattern involves executing some function when an observed object changes.
+ *  Other libraries exist that do this, but with Watch.JS you will not have to change the way you develop.
+ *  Take a look at the examples to see how simple it is to add Watch.JS to your code.
+ *
+ *  @module WatchJS
+ *  @class WatchJS
+ *  @static
+ */
 "use strict";
 (function (factory) {
     if (typeof exports === 'object') {
@@ -38,6 +49,16 @@
         isArray:function (obj) {
             return Object.prototype.toString.call(obj) === '[object Array]';
         },
+
+        /**
+         * @method defineGetAndSet
+         * @static
+         *
+         * @param {Object} obj
+         * @param {String} propName
+         * @param {Function} getter
+         * @param {Function} setter
+         */
         defineGetAndSet:function (obj, propName, getter, setter) {
             try {
                 Object.defineProperty(obj, propName, {
@@ -55,6 +76,14 @@
                 }
             }
         },
+        /**
+         * @method defineProp
+         * @static
+         *
+         * @param {Object} obj
+         * @param {String} propName
+         * @param value
+         */
         defineProp:function (obj, propName, value) {
             try {
                 Object.defineProperty(obj, propName, {

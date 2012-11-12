@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\watch.js</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.7.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.7.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/WatchJS.html">WatchJS</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/WatchJS.html">WatchJS</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src\watch.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * DEVELOPED BY
+ * GIL LOPES BUENO
+ * gilbueno.mail@gmail.com
+ *
+ * WORKS WITH:
+ * IE 9+, FF 4+, SF 5+, WebKit, CH 7+, OP 12+, BESEN, Rhino 1.7+
+ *
+ * FORK:
+ * https:&#x2F;&#x2F;github.com&#x2F;melanke&#x2F;Watch.JS
+ *&#x2F;
+
+&#x2F;**
+ *  Watch.JS is a small library that brings a lot of possibilities.
+ *  You may know that the &quot;Observer&quot; design pattern involves executing some function when an observed object changes.
+ *  Other libraries exist that do this, but with Watch.JS you will not have to change the way you develop.
+ *  Take a look at the examples to see how simple it is to add Watch.JS to your code.
+ *
+ *  @module WatchJS
+ *  @class WatchJS
+ *  @static
+ *&#x2F;
+&quot;use strict&quot;;
+(function (factory) {
+    if (typeof exports === &#x27;object&#x27;) {
+        &#x2F;&#x2F; Node. Does not work with strict CommonJS, but
+        &#x2F;&#x2F; only CommonJS-like enviroments that support module.exports,
+        &#x2F;&#x2F; like Node.
+        module.exports = factory();
+    } else if (typeof define === &#x27;function&#x27; &amp;&amp; define.amd) {
+        &#x2F;&#x2F; AMD. Register as an anonymous module.
+        define(factory);
+    } else {
+        &#x2F;&#x2F; Browser globals
+        window.WatchJS = factory();
+    }
+}(function () {
+    var WatchJS = {
+
+        noMore:false,
+
+        isFunction:function (functionToCheck) {
+            var getType = {};
+            return functionToCheck &amp;&amp; getType.toString.call(functionToCheck) === &#x27;[object Function]&#x27;;
+        },
+        isInt:function (x) {
+            return x % 1 === 0;
+        },
+        isArray:function (obj) {
+            return Object.prototype.toString.call(obj) === &#x27;[object Array]&#x27;;
+        },
+
+        &#x2F;**
+         * @method defineGetAndSet
+         * @static
+         *
+         * @param {Object} obj
+         * @param {String} propName
+         * @param {Function} getter
+         * @param {Function} setter
+         *&#x2F;
+        defineGetAndSet:function (obj, propName, getter, setter) {
+            try {
+                Object.defineProperty(obj, propName, {
+                    get:getter,
+                    set:setter,
+                    enumerable:true,
+                    configurable:true
+                });
+            } catch (error) {
+                try {
+                    Object.prototype.__defineGetter__.call(obj, propName, getter);
+                    Object.prototype.__defineSetter__.call(obj, propName, setter);
+                } catch (error2) {
+                    throw &quot;watchJS error: browser not supported :&#x2F;&quot;;
+                }
+            }
+        },
+        &#x2F;**
+         * @method defineProp
+         * @param {Object} obj
+         * @param {String} propName
+         * @param value
+         *&#x2F;
+        defineProp:function (obj, propName, value) {
+            try {
+                Object.defineProperty(obj, propName, {
+                    enumerable:false,
+                    configurable:true,
+                    writable:false,
+                    value:value
+                });
+            } catch (error) {
+                obj[propName] = value;
+            }
+        }
+    };
+
+    WatchJS.defineProp(Object.prototype, &quot;watch&quot;, function () {
+
+        if (arguments.length === 1) {
+            this.watchAll.apply(this, arguments);
+        } else if (WatchJS.isArray(arguments[0])) {
+            this.watchMany.apply(this, arguments);
+        } else {
+            this.watchOne.apply(this, arguments);
+        }
+
+    });
+
+
+    WatchJS.defineProp(Object.prototype, &quot;watchAll&quot;, function (watcher) {
+
+        var obj = this;
+
+        if (obj instanceof String || (!(obj instanceof Object) &amp;&amp; !WatchJS.isArray(obj))) { &#x2F;&#x2F;accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+        if (WatchJS.isArray(obj)) {
+            for (var prop = 0; prop &lt; obj.length; prop++) { &#x2F;&#x2F;for each item if obj is an array
+                props.push(prop); &#x2F;&#x2F;put in the props
+            }
+        } else {
+            for (var prop2 in obj) { &#x2F;&#x2F;for each attribute if obj is an object
+                props.push(prop2); &#x2F;&#x2F;put in the props
+            }
+        }
+
+        obj.watchMany(props, watcher); &#x2F;&#x2F;watch all itens of the props
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;watchMany&quot;, function (props, watcher) {
+        var obj = this;
+
+        if (WatchJS.isArray(obj)) {
+            for (var prop in props) { &#x2F;&#x2F;watch each iten of &quot;props&quot; if is an array
+                obj.watchOne(props[prop], watcher);
+            }
+        } else {
+            for (var prop2 in props) { &#x2F;&#x2F;watch each attribute of &quot;props&quot; if is an object
+                obj.watchOne(props[prop2], watcher);
+            }
+        }
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;watchOne&quot;, function (prop, watcher) {
+        var obj = this;
+
+        var val = obj[prop];
+
+        if (obj[prop] === undefined || WatchJS.isFunction(obj[prop])) { &#x2F;&#x2F;dont watch if it is null or a function
+            return;
+        }
+
+        if (obj[prop] != null) {
+            obj[prop].watchAll(watcher); &#x2F;&#x2F;recursively watch all attributes of this
+        }
+
+        obj.watchFunctions(prop);
+
+        if (!obj.watchers) {
+            WatchJS.defineProp(obj, &quot;watchers&quot;, {});
+        }
+
+        if (!obj.watchers[prop]) {
+            obj.watchers[prop] = [];
+        }
+
+        obj.watchers[prop].push(watcher); &#x2F;&#x2F;add the new watcher in the watchers array
+
+        var getter = function () {
+            return val;
+        };
+
+        var setter = function (newval) {
+            var oldval = val;
+            val = newval;
+
+            if (obj[prop]) {
+                obj[prop].watchAll(watcher);
+            }
+
+            obj.watchFunctions(prop);
+
+            if (JSON.stringify(oldval) !== JSON.stringify(newval)) {
+                if (!WatchJS.noMore) {
+                    obj.callWatchers(prop, newval, oldval);
+                    WatchJS.noMore = false;
+                }
+            }
+        };
+
+        WatchJS.defineGetAndSet(obj, prop, getter, setter);
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;unwatch&quot;, function () {
+
+        if (arguments.length === 1) {
+            this.unwatchAll.apply(this, arguments);
+        } else if (WatchJS.isArray(arguments[0])) {
+            this.unwatchMany.apply(this, arguments);
+        } else {
+            this.unwatchOne.apply(this, arguments);
+        }
+
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;unwatchAll&quot;, function (watcher) {
+
+        var obj = this;
+
+        if (obj instanceof String || (!(obj instanceof Object) &amp;&amp; !WatchJS.isArray(obj))) { &#x2F;&#x2F;accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+        if (WatchJS.isArray(obj)) {
+            for (var prop = 0; prop &lt; obj.length; prop++) { &#x2F;&#x2F;for each item if obj is an array
+                props.push(prop); &#x2F;&#x2F;put in the props
+            }
+        } else {
+            for (var prop2 in obj) { &#x2F;&#x2F;for each attribute if obj is an object
+                props.push(prop2); &#x2F;&#x2F;put in the props
+            }
+        }
+
+        obj.unwatchMany(props, watcher); &#x2F;&#x2F;watch all itens of the props
+    });
+
+
+    WatchJS.defineProp(Object.prototype, &quot;unwatchMany&quot;, function (props, watcher) {
+        var obj = this;
+
+        if (WatchJS.isArray(obj)) {
+            for (var prop in props) { &#x2F;&#x2F;watch each iten of &quot;props&quot; if is an array
+                obj.unwatchOne(props[prop], watcher);
+            }
+        } else {
+            for (var prop2 in props) { &#x2F;&#x2F;watch each attribute of &quot;props&quot; if is an object
+                obj.unwatchOne(props[prop2], watcher);
+            }
+        }
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;unwatchOne&quot;, function (prop, watcher) {
+        for (var i in this.watchers[prop]) {
+            var w = this.watchers[prop][i];
+
+            if (w === watcher) {
+                this.watchers[prop].splice(i, 1);
+            }
+        }
+    });
+
+    WatchJS.defineProp(Object.prototype, &quot;callWatchers&quot;, function (prop, newval, oldval) {
+        var obj = this;
+
+        for (var wr in obj.watchers[prop]) {
+            if (WatchJS.isInt(wr)) {
+                obj.watchers[prop][wr](prop, newval, oldval);
+            }
+        }
+    });
+
+    &#x2F;&#x2F; @todo code related to &quot;watchFunctions&quot; is certainly buggy
+    var methodNames = [&#x27;pop&#x27;, &#x27;push&#x27;, &#x27;reverse&#x27;, &#x27;shift&#x27;, &#x27;sort&#x27;, &#x27;slice&#x27;, &#x27;unshift&#x27;];
+    var defineArrayMethodWatcher = function(obj, prop, original, methodName) {
+        WatchJS.defineProp(obj[prop], methodName, function () {
+            var response = original.apply(this, arguments);
+            obj.watchOne(obj[prop]);
+            if (methodName !== &#x27;slice&#x27;) {
+                obj.callWatchers(prop);
+            }
+            return response;
+        });
+    };
+
+    WatchJS.defineProp(Object.prototype, &quot;watchFunctions&quot;, function (prop) {
+        var obj = this;
+
+        if ((!obj[prop]) || (obj[prop] instanceof String) || (!WatchJS.isArray(obj[prop]))) {
+            return;
+        }
+
+        for (var i = methodNames.length, methodName; i--;) {
+            methodName = methodNames[i];
+            defineArrayMethodWatcher(obj, prop, obj[prop][methodName], methodName);
+        }
+
+    });
+
+    return WatchJS;
+
+}));
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>
